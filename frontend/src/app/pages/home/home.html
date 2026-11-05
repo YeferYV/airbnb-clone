@@ -1,0 +1,26 @@
+<div class="home-page container">
+  <div class="home-intro">
+    <div>
+      <span class="eyebrow">Stays for every kind of trip</span>
+      <h1>Find a place that feels like yours.</h1>
+    </div>
+    <p>{{ summary() }}</p>
+  </div>
+
+  @if (loading()) {
+    <app-loader />
+  } @else if (listings().length === 0) {
+    <app-empty-state
+      [showReset]="hasFilters()"
+      title="No stays match this search"
+      subtitle="Try another destination, remove a filter, or widen your dates."
+      (reset)="reset()"
+    />
+  } @else {
+    <div class="listing-grid">
+      @for (listing of listings(); track listing.id) {
+        <app-listing-card [data]="listing" />
+      }
+    </div>
+  }
+</div>

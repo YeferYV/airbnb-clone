@@ -1,0 +1,30 @@
+# .NET
+**/bin/
+**/obj/
+backend/*.db
+backend/*.db-shm
+backend/*.db-wal
+
+# Node / Angular
+**/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Tooling and editors
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.tsbuildinfo
+__screenshots__/

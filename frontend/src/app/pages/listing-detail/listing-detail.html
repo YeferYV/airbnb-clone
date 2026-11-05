@@ -1,0 +1,155 @@
+@if (loading()) {
+  <app-loader />
+} @else if (notFound() || !listing()) {
+  <div class="page-shell container">
+    <app-empty-state
+      title="This stay is not available"
+      subtitle="The listing may have been removed or the link is incorrect."
+    />
+  </div>
+} @else {
+  @if (listing(); as item) {
+    <div class="listing-page container">
+      <div class="listing-heading">
+        <div>
+          <a routerLink="/" class="back-link">
+            <app-icon name="chevron-left" [size]="16" />
+            Back to stays
+          </a>
+          <h1>{{ item.title }}</h1>
+          <div class="listing-meta">
+            <span class="rating">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.3-6.2 3.3L7 14.2 2 9.3l6.9-1Z" />
+              </svg>
+              4.9 · {{ item.category }}
+            </span>
+            <span class="dot">·</span>
+            <img class="flag" [src]="flag()" alt="" />
+            <span>{{ location() }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-image">
+        @if (!imageFailed()) {
+          <img [src]="item.imageSrc" [alt]="item.title" (error)="imageFailed.set(true)" />
+        } @else {
+          <img src="/images/placeholder.jpg" [alt]="item.title" />
+        }
+        <div class="hero-heart">
+          <app-heart-button [listingId]="item.id" />
+        </div>
+      </div>
+
+      <div class="listing-layout">
+        <section class="listing-info">
+          <div class="host-row">
+            <app-avatar [src]="item.user.image" [name]="item.user.name" />
+            <div>
+              <h2>Hosted by {{ item.user.name }}</h2>
+              <p>Superhost · Responsive and highly rated</p>
+            </div>
+          </div>
+
+          <div class="property-specs">
+            <span><app-icon name="users" [size]="18" /> {{ item.guestCount }} guests</span>
+            <span><app-icon name="home" [size]="18" /> {{ item.roomCount }} rooms</span>
+            <span><app-icon name="waves" [size]="18" /> {{ item.bathroomCount }} baths</span>
+          </div>
+
+          <hr class="divider" />
+
+          @if (category(); as categoryInfo) {
+            <div class="category-row">
+              <span class="category-mark">
+                <app-icon [name]="categoryInfo.icon" [size]="30" />
+              </span>
+              <div>
+                <strong>{{ categoryInfo.label }}</strong>
+                <p>{{ categoryInfo.description }}</p>
+              </div>
+            </div>
+            <hr class="divider" />
+          }
+
+          <div class="description">
+            <h3>About this place</h3>
+            <p>{{ item.description }}</p>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="location-section">
+            <h3>Where you'll be</h3>
+            <p>{{ location() }}</p>
+            <app-map [center]="center()" />
+          </div>
+        </section>
+
+        <aside class="booking-card">
+          <div class="booking-price">
+            <strong>${{ item.price }}</strong>
+            <span>night</span>
+          </div>
+
+          <div class="booking-dates">
+            <label class="field">
+              <span>Check in</span>
+              <input
+                type="date"
+                [min]="today"
+                [value]="checkIn()"
+                (change)="onCheckIn($any($event.target).value)"
+              />
+            </label>
+            <label class="field">
+              <span>Check out</span>
+              <input
+                type="date"
+                [min]="minCheckOut()"
+                [value]="checkOut()"
+                (change)="onCheckOut($any($event.target).value)"
+              />
+            </label>
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-primary reserve-button"
+            [disabled]="!canReserve()"
+            (click)="reserve()"
+          >
+            {{ busy() ? 'Reserving...' : 'Reserve' }}
+          </button>
+
+          @if (dateError() || reservationError()) {
+            <p class="booking-error">{{ reservationError() || dateError() }}</p>
+          }
+
+          <div class="price-breakdown">
+            <div>
+              <span>${{ item.price }} × {{ nights() }} {{ nights() === 1 ? 'night' : 'nights' }}</span>
+              <span>${{ totalPrice() }}</span>
+            </div>
+            <div class="total-row">
+              <strong>Total</strong>
+              <strong>${{ totalPrice() }}</strong>
+            </div>
+          </div>
+
+          <p class="booking-note">You won't be charged yet. Free cancellation up to 48 hours before check-in.</p>
+
+          @if (occupied().length > 0) {
+            <div class="occupied-box">
+              <strong>Already reserved</strong>
+              @for (range of occupied(); track range.id) {
+                <span>{{ range.label }}</span>
+              }
+            </div>
+          }
+        </aside>
+      </div>
+    </div>
+  }
+}

@@ -1,0 +1,96 @@
+<header class="navbar">
+  <div class="nav-main container">
+    <button type="button" class="logo-button" aria-label="Go to home" (click)="go('/')">
+      <img src="/images/logo.png" alt="Airbnb" />
+    </button>
+
+    <button type="button" class="search-pill" (click)="openSearch()">
+      <span class="search-segment location">
+        @if (locationFlag()) {
+          <img class="flag" [src]="locationFlag()" alt="" />
+        }
+        <span>{{ searchLocation() }}</span>
+      </span>
+      <span class="search-divider"></span>
+      <span class="search-segment dates">{{ searchDates() }}</span>
+      <span class="search-divider"></span>
+      <span class="search-segment guests">
+        <span>{{ searchGuests() }}</span>
+        <span class="search-orb">
+          <app-icon name="search" [size]="17" />
+        </span>
+      </span>
+    </button>
+
+    <div class="nav-actions">
+      <button type="button" class="host-link" (click)="openRent()">Airbnb your home</button>
+      <button type="button" class="globe-button" aria-label="Language and currency">
+        <app-icon name="globe" [size]="19" />
+      </button>
+
+      <div class="menu-wrap">
+        <button
+          type="button"
+          class="menu-trigger"
+          [class.open]="menuOpen()"
+          (click)="menuOpen.set(!menuOpen())"
+          aria-label="Open user menu"
+        >
+          <app-icon name="menu" [size]="18" />
+          @if (auth.user(); as user) {
+            <app-avatar [src]="user.image" [name]="user.name" />
+          } @else {
+            <span class="guest-avatar">
+              <app-icon name="users" [size]="17" />
+            </span>
+          }
+        </button>
+
+        @if (menuOpen()) {
+          <div class="menu-dropdown">
+            @if (auth.user(); as user) {
+              <div class="menu-user">
+                <strong>{{ user.name }}</strong>
+                <span>{{ user.email }}</span>
+              </div>
+              <button type="button" (click)="go('/trips')">My trips</button>
+              <button type="button" (click)="go('/favorites')">My favorites</button>
+              <button type="button" (click)="go('/reservations')">My reservations</button>
+              <button type="button" (click)="go('/properties')">My properties</button>
+              <button type="button" (click)="openRent()">Airbnb your home</button>
+              <div class="menu-separator"></div>
+              <button type="button" class="logout" (click)="logout()">
+                <app-icon name="logout" [size]="16" />
+                Log out
+              </button>
+            } @else {
+              <button type="button" class="menu-strong" (click)="openAuth('register')">Sign up</button>
+              <button type="button" (click)="openAuth('login')">Log in</button>
+              <div class="menu-separator"></div>
+              <button type="button" (click)="openRent()">Airbnb your home</button>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  @if (isHome()) {
+    <div class="categories-bar">
+      <div class="categories-track container">
+        @for (category of categories; track category.label) {
+          <button
+            type="button"
+            class="category-item"
+            [class.selected]="selectedCategory() === category.label"
+            (click)="selectCategory(category.label)"
+            [title]="category.description"
+          >
+            <app-icon [name]="category.icon" [size]="24" />
+            <span>{{ category.label }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  }
+</header>
